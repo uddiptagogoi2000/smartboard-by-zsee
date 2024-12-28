@@ -21,13 +21,17 @@ function AuthLayout({ children }: PropsWithChildren) {
           display={'grid'}
           alignItems={'center'}
           justifyContent={'center'}
-          overflow={'auto'}
+          overflowY={'auto'}
         >
           <Box
             rounded={'lg'}
             px={{
               sm: 1,
               md: 2,
+            }}
+            py={{
+              base: 20,
+              md: 0,
             }}
             md={{ w: 'md' }}
             maxW='md'

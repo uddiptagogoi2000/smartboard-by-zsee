@@ -1,14 +1,20 @@
 import { ChakraProvider } from '@chakra-ui/react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ColorModeProvider } from './components/ui/color-mode';
-import RootLayout from './layouts/RootLayout';
-import system from './theme';
-import NotFound from './components/common/NotFound';
-import SignupCard from './components/common/SignupForm';
-import ComponentPlayground from './components/common/ComponentPlaygroud';
-import AuthLayout from './layouts/AuthLayout';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import SigninForm from './components/auth/SigninForm';
+import SignupForm from './components/auth/SignupForm';
+import ComponentPlayground from './components/common/ComponentPlaygroud';
+import NotFound from './components/common/NotFound';
+import Private from './components/routes/Private';
+import { ColorModeProvider } from './components/ui/color-mode';
 import { Toaster } from './components/ui/toaster';
+import AuthLayout from './layouts/AuthLayout';
+import DashboardLayout from './layouts/DashboardLayout';
+import system from './theme';
+import RootLayout from './layouts/RootLayout';
+import Public from './components/routes/Public';
+import DashboardListPage from './pages/DashboardListPage';
+import DashboardDetailsPage from './pages/DashboardDetailsPage';
 
 const queryClient = new QueryClient();
 
@@ -20,18 +26,44 @@ function App() {
           <Toaster />
           <BrowserRouter>
             <Routes>
-              <Route
-                path='/signup'
-                element={
-                  <AuthLayout>
-                    <SignupCard />
-                  </AuthLayout>
-                }
-              />
               <Route path='/' element={<RootLayout />}>
-                <Route index element={<NotFound />} />
-                <Route path='/components' element={<ComponentPlayground />} />
-                <Route path='*' element={<NotFound />} />
+                <Route
+                  path='signup'
+                  element={
+                    <Public>
+                      <AuthLayout>
+                        <SignupForm />
+                      </AuthLayout>
+                    </Public>
+                  }
+                />
+                <Route
+                  path='signin'
+                  element={
+                    <Public>
+                      <AuthLayout>
+                        <SigninForm />
+                      </AuthLayout>
+                    </Public>
+                  }
+                />
+                <Route
+                  path=''
+                  element={
+                    <Private>
+                      <DashboardLayout />
+                    </Private>
+                  }
+                >
+                  <Route index element={<NotFound />} />
+                  <Route path='/dashboards' element={<DashboardListPage />} />
+                  <Route
+                    path='/dashboards/:id'
+                    element={<DashboardDetailsPage />}
+                  />
+                  <Route path='/components' element={<ComponentPlayground />} />
+                  <Route path='*' element={<NotFound />} />
+                </Route>
               </Route>
             </Routes>
           </BrowserRouter>

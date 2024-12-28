@@ -1,5 +1,4 @@
 import {
-  Button,
   Flex,
   Grid,
   GridItem,
@@ -19,6 +18,8 @@ import { Field } from '../ui/field';
 import { PasswordInput, PasswordStrengthMeter } from '../ui/password-input';
 import { toaster } from '../ui/toaster';
 import useAuth from '../../hooks/auth/useAuth';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../ui/button';
 
 type FormData = yup.InferType<typeof signupSchema>;
 
@@ -39,7 +40,8 @@ const signupToasterMessages = {
 };
 
 function SignupForm() {
-  const { signUp } = useAuth();
+  const { signUp, signUpLoading } = useAuth();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -111,6 +113,7 @@ function SignupForm() {
               errorText={capitalizeFirstLetter(errors.firstName?.message)}
               invalid={!!errors.firstName}
               required
+              colorPalette={'teal'}
             >
               <Input
                 placeholder='Enter your first name'
@@ -123,6 +126,7 @@ function SignupForm() {
               label='Last Name'
               errorText={capitalizeFirstLetter(errors.lastName?.message)}
               invalid={!!errors.lastName}
+              colorPalette={'teal'}
             >
               <Input
                 placeholder='Enter your last name'
@@ -136,6 +140,7 @@ function SignupForm() {
           errorText={capitalizeFirstLetter(errors.email?.message)}
           invalid={!!errors.email}
           required
+          colorPalette={'teal'}
         >
           <Input
             type='email'
@@ -151,6 +156,7 @@ function SignupForm() {
           errorText={capitalizeFirstLetter(errors.password?.message)}
           invalid={!!errors.password}
           required
+          colorPalette={'teal'}
         >
           <Stack width={'full'}>
             <PasswordInput
@@ -167,6 +173,7 @@ function SignupForm() {
           errorText={capitalizeFirstLetter(errors.confirmPassword?.message)}
           invalid={!!errors.confirmPassword}
           required
+          colorPalette={'teal'}
         >
           <Stack width={'full'}>
             <PasswordInput
@@ -184,13 +191,17 @@ function SignupForm() {
             gradientFrom={'teal.400'}
             gradientTo={'teal.600'}
             type='submit'
+            loading={signUpLoading}
           >
             Sign up
           </Button>
         </Stack>
         <Stack pt={4}>
           <Text textAlign={'center'} fontSize={'sm'}>
-            Already a user? <Link colorPalette={'teal'}>Login</Link>
+            Already a user?{' '}
+            <Link onClick={() => navigate('/signin')} colorPalette={'teal'}>
+              Sign in
+            </Link>
           </Text>
         </Stack>
       </Stack>

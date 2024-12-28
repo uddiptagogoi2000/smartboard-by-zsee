@@ -23,3 +23,13 @@ export const signupSchema = yup.object({
     .oneOf([yup.ref('password')], 'Passwords must match')
     .required('This field is required'),
 });
+
+export const signinSchema = yup.object({
+  email: yup.string().email().required('This field is required'),
+  password: yup.string().required('This field is required'),
+});
+
+export const createDashboardSchema = yup.object({
+  title: yup.string().max(100).required('Title is required'),
+  description: yup.string().max(300),
+});

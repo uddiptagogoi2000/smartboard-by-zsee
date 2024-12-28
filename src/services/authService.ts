@@ -1,4 +1,4 @@
-import { apiCall } from '../apiClient';
+import { api, apiCall } from '../apiClient';
 
 export type SignInResponse = {
   statusCode: number;

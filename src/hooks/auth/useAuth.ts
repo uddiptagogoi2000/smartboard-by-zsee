@@ -2,9 +2,12 @@ import { useMutation } from '@tanstack/react-query';
 import type { SignInPayload, SignUpPayload } from '../../services/authService';
 import AuthApiService from '../../services/authService';
 import useBoundStore from '../../store';
+import { useLocalStorageManager } from '../localStorage/useLocalStorageManager';
 
 function useAuth() {
   const setUser = useBoundStore((state) => state.setUser);
+  const setToken = useBoundStore((state) => state.setToken);
+  const { updateAuthState: updateAuthStateLS } = useLocalStorageManager();
 
   const signUpMutation = useMutation({
     mutationFn: AuthApiService.signUp,
@@ -24,6 +27,9 @@ function useAuth() {
         firstName: data.data.data.user.firstName,
         email: data.data.data.user.email,
       });
+      setToken(data.data.data.accessToken);
+      updateAuthStateLS(true);
+      console.log(useBoundStore.getState());
     },
     onError: (error) => {
       console.error('Signin failed', error);
@@ -43,7 +49,9 @@ function useAuth() {
 
   return {
     signUp,
+    signUpLoading: signUpMutation.isPending,
     signIn,
+    signInLoading: signInMutation.isPending,
   };
 }
 
