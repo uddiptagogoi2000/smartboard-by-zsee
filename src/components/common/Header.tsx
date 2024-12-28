@@ -3,17 +3,16 @@ import {
   RiAppsFill,
   RiArtboard2Line,
   RiFolder2Fill,
-  RiMenu2Fill,
   RiMenuFill,
 } from '@remixicon/react';
 import { RiMore2Line } from 'react-icons/ri';
+import { useDashboardLayoutContext } from '../../layouts/DashboardLayout';
 import { Avatar } from '../ui/avatar';
 import {
   BreadcrumbCurrentLink,
   BreadcrumbLink,
   BreadcrumbRoot,
 } from '../ui/breadcrumb';
-import { useDashboardLayoutContext } from '../../layouts/DashboardLayout';
 
 type HeaderProps = {
   isSidebarVisible: boolean;

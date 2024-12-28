@@ -14,12 +14,10 @@ import { useDashboardLayoutContext } from '../../layouts/DashboardLayout';
 import { Button } from '../ui/button';
 import { ColorModeButton } from '../ui/color-mode';
 import {
-  DrawerActionTrigger,
   DrawerBackdrop,
   DrawerBody,
   DrawerCloseTrigger,
   DrawerContent,
-  DrawerFooter,
   DrawerHeader,
   DrawerRoot,
   DrawerTitle,
@@ -342,12 +340,6 @@ const Sidebar = ({ isVisible, onHide }: SideBarProps): JSX.Element => {
             {sidebarNavSections}
             {sidebarFooterSticky}
           </DrawerBody>
-          {/* <DrawerFooter>
-            <DrawerActionTrigger asChild>
-              <Button variant='outline'>Cancel</Button>
-            </DrawerActionTrigger>
-            <Button>Save</Button>
-          </DrawerFooter> */}
           <DrawerCloseTrigger />
         </DrawerContent>
       </DrawerRoot>

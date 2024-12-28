@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import { RiEyeLine } from '@remixicon/react';
 import { createContext, useContext, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Header from '../components/common/Header';
 import Sidebar from '../components/common/Sidebar';
 import { Button } from '../components/ui/button';

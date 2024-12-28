@@ -1,5 +1,4 @@
 import {
-  Bleed,
   Box,
   Flex,
   Grid,
@@ -10,17 +9,16 @@ import {
   IconButton,
   Separator,
 } from '@chakra-ui/react';
-import PageLayout from '../layouts/PageLayout';
 import {
   RiAddLine,
   RiCheckLine,
   RiCloseLine,
   RiPencilLine,
-  RiResetRightLine,
   RiSearchLine,
 } from '@remixicon/react';
-import { Button } from '../components/ui/button';
 import { useState } from 'react';
+import { Button } from '../components/ui/button';
+import PageLayout from '../layouts/PageLayout';
 
 const DashboardDetailsPage = () => {
   const [isEditing, setIsEditing] = useState(false);
