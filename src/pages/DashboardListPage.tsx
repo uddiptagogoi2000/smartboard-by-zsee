@@ -17,16 +17,20 @@ import {
   PaginationRoot,
 } from '../components/ui/pagination';
 import PageLayout from '../layouts/PageLayout';
+import { useNavigate } from 'react-router-dom';
+import { useGetAllDashboards } from '../hooks/dashboard/useDashboard';
 
 const DashboardListPage = () => {
   const [open, setOpen] = useState(false);
+  const { data, isLoading } = useGetAllDashboards();
+  const navigate = useNavigate();
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
   };
 
   return (
-    <PageLayout fixedHeight isLoading>
+    <PageLayout fixedHeight isLoading={isLoading}>
       <CommonDialog
         title='Create Dashboard'
         open={open}
@@ -62,18 +66,21 @@ const DashboardListPage = () => {
           <Table.Root size='md' stickyHeader interactive>
             <Table.Header>
               <Table.Row bg='bg.subtle'>
-                <Table.ColumnHeader>Product</Table.ColumnHeader>
-                <Table.ColumnHeader>Category</Table.ColumnHeader>
-                <Table.ColumnHeader textAlign='end'>Price</Table.ColumnHeader>
+                <Table.ColumnHeader>Id</Table.ColumnHeader>
+                <Table.ColumnHeader>Title</Table.ColumnHeader>
+                <Table.ColumnHeader>Created By</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
 
             <Table.Body>
-              {items.map((item) => (
-                <Table.Row key={item.id}>
-                  <Table.Cell>{item.name}</Table.Cell>
-                  <Table.Cell>{item.category}</Table.Cell>
-                  <Table.Cell textAlign='end'>{item.price}</Table.Cell>
+              {data?.data?.data?.map((item) => (
+                <Table.Row
+                  key={item._id}
+                  onClick={() => navigate(`/dashboards/${item._id}`)}
+                >
+                  <Table.Cell>{item._id}</Table.Cell>
+                  <Table.Cell>{item.dashboard_name}</Table.Cell>
+                  <Table.Cell>{item.created_by}</Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>

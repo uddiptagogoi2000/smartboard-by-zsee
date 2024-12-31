@@ -3,11 +3,14 @@ import type { SignInPayload, SignUpPayload } from '../../services/authService';
 import AuthApiService from '../../services/authService';
 import useBoundStore from '../../store';
 import { useLocalStorageManager } from '../localStorage/useLocalStorageManager';
+import { useNavigate } from 'react-router-dom';
 
 function useAuth() {
   const setUser = useBoundStore((state) => state.setUser);
   const setToken = useBoundStore((state) => state.setToken);
   const { updateAuthState: updateAuthStateLS } = useLocalStorageManager();
+  useNavigate;
+  const navigate = useNavigate();
 
   const signUpMutation = useMutation({
     mutationFn: AuthApiService.signUp,
@@ -30,6 +33,7 @@ function useAuth() {
       setToken(data.data.data.accessToken);
       updateAuthStateLS(true);
       console.log(useBoundStore.getState());
+      navigate('/dashboards');
     },
     onError: (error) => {
       console.error('Signin failed', error);

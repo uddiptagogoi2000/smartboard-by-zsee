@@ -37,6 +37,14 @@ export type SignUpPayload = {
   password: string;
 };
 
+export type GetUserResponse = {
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+};
+
 const AuthApiService = {
   signUp: (payload: SignUpPayload) =>
     apiCall<SignUpPayload, SignUpResponse>('post', '/users/register', payload),
@@ -46,6 +54,10 @@ const AuthApiService = {
 
   renewToken: () =>
     apiCall<null, { accessToken: string }>('get', '/refresh-token'),
+
+  getUser: () => {
+    return apiCall<null, SignInResponse>('get', '/users/me');
+  },
 
   signOut: () => {},
   resetPassword: () => {},

@@ -110,7 +110,7 @@ const SigninForm = () => {
           type='submit'
           loading={signInLoading}
         >
-          Sign up
+          Sign in
         </Button>
         <Text textAlign={'center'} fontSize={'sm'} mt={'3'}>
           Don't have an account?{' '}
