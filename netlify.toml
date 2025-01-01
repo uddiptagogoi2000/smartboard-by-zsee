@@ -1,4 +1,0 @@
-[[redirects]]
-  from = "/api/*"
-  to = "http://zseeiot.in:8000/:splat"
-  status = 200
