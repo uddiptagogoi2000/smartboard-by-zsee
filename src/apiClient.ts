@@ -42,6 +42,25 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// // Add a response interceptor
+// api.interceptors.response.use(
+//   (response) => response, // Return the response if no error
+//   (error) => {
+//     // const originalRequest = error.config;
+
+//     console.log(error);
+
+//     if (error.response?.status === 401) {
+//       console.log('Token expired, redirecting to login...');
+//       useBoundStore.getState().setToken(null);
+//       useBoundStore.getState().setIsAuthenticated(false);
+//       // window.location.href = '/signin';
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
+
 // Add a response interceptor
 api.interceptors.response.use(
   (response) => response, // Return the response if no error
@@ -71,6 +90,7 @@ api.interceptors.response.use(
           {},
           { withCredentials: true }
         );
+
         const newToken = response.data.accessToken;
 
         // Update the store with the new token
@@ -83,11 +103,13 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${newToken}`;
         return api(originalRequest);
       } catch (err) {
+        console.log('here');
         console.log('Error refreshing token', err);
         processQueue(err, null);
 
         // Clear the token in the store and redirect to login
         useBoundStore.getState().setToken(null);
+        useBoundStore.getState().setIsAuthenticated(false);
         // window.location.href = '/signin'; // Adjust the login route as needed
         return Promise.reject(err);
       } finally {

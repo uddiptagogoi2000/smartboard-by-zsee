@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 function useAuth() {
   const setUser = useBoundStore((state) => state.setUser);
   const setToken = useBoundStore((state) => state.setToken);
+  const setIsAuthenticated = useBoundStore((state) => state.setIsAuthenticated);
   const { updateAuthState: updateAuthStateLS } = useLocalStorageManager();
   useNavigate;
   const navigate = useNavigate();
@@ -31,6 +32,7 @@ function useAuth() {
         email: data.data.data.user.email,
       });
       setToken(data.data.data.accessToken);
+      setIsAuthenticated(true);
       updateAuthStateLS(true);
       console.log(useBoundStore.getState());
       navigate('/dashboards');

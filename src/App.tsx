@@ -55,8 +55,12 @@ function App() {
                     </Private>
                   }
                 >
-                  <Route index element={<NotFound />} />
-                  <Route path='/dashboards' element={<DashboardListPage />} />
+                  {/* <Route index element={<NotFound />} /> */}
+                  <Route
+                    // index
+                    path='/dashboards'
+                    element={<DashboardListPage />}
+                  />
                   <Route
                     path='/dashboards/:id'
                     element={<DashboardDetailsPage />}
