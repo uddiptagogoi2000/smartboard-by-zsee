@@ -77,7 +77,7 @@ const DashboardListPage = () => {
                   key={item._id}
                   onClick={() =>
                     navigate(
-                      `/dashboards/${item._id}?name=${item.dashboard_name}deviceId=${item.deviceUniqueId}`
+                      `/dashboards/${item._id}?name=${item.dashboard_name}&deviceId=${item.deviceUniqueId}`
                     )
                   }
                 >
