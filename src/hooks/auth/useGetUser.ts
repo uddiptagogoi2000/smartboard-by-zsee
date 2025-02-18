@@ -14,11 +14,11 @@ export function useGetUser() {
   useEffect(() => {
     if (data) {
       setUser({
-        firstName: data?.data?.data?.user?.firstName,
-        lastName: data?.data?.data?.user?.lastName,
-        email: data?.data?.data?.user?.email,
+        firstName: data?.user?.firstName,
+        lastName: data?.user?.lastName,
+        email: data?.user?.email,
       });
-      setToken(data?.data?.data.accessToken);
+      setToken(data?.accessToken);
     }
   }, [data]);
 
@@ -30,7 +30,7 @@ export function useGetUser() {
   }, [error, isError]);
 
   return {
-    user: data?.data?.data?.user,
+    user: data?.user,
     refetchUser: refetch,
   };
 }

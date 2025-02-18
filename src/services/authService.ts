@@ -1,28 +1,20 @@
 import { apiCall } from '../apiClient';
 
 export type SignInResponse = {
-  statusCode: number;
-  data: {
-    user: {
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
-    accessToken: string;
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
   };
-  message: string;
+  accessToken: string;
 };
 
 export type SignUpResponse = {
-  statusCode: number;
-  data: {
-    user: {
-      firstName: string;
-      lastName: string;
-      email: string;
-    };
+  user: {
+    firstName: string;
+    lastName: string;
+    email: string;
   };
-  message: string;
 };
 
 export type SignInPayload = {

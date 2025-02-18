@@ -1,145 +1,167 @@
-interface BaseWidgetProps {
-  id: string;
-  name: string;
-  type: string;
-  dashboardId: string;
-  dataKey: string;
-  dataSubkey?: string;
-}
+import { Widget } from '../context/DashboardRefactor';
+import { useWebSocketData } from '../context/WebSocketProvider';
 
-interface ValueCardWidgetProps extends BaseWidgetProps {
-  type: 'value-card';
-  data: {
-    value: string | null;
-  };
-}
+// interface BaseWidgetProps {
+//   id: string;
+//   infoId: string;
+//   name: string;
+//   type: string;
+//   dashboardId: string;
+//   dataKey: string;
+//   dataSubkey?: string;
+// }
 
-interface LineChartWidgetProps extends BaseWidgetProps {
-  type: 'line-chart';
-  data: {
-    labels: string[];
-    datasets: {
-      label: string;
-      data: number[];
-    }[];
-  };
-}
+// interface ValueCardWidgetProps extends BaseWidgetProps {
+//   type: 'value-card';
+//   data?: string | number;
+// }
 
-export type WidgetProps = ValueCardWidgetProps | LineChartWidgetProps;
+// interface LineChartWidgetProps extends BaseWidgetProps {
+//   type: 'line-chart';
+//   data: {
+//     labels: string[];
+//     datasets: {
+//       label: string;
+//       data: number[];
+//     }[];
+//   };
+// }
 
-export type WidgetAction =
-  | {
-      type: 'ADD_WIDGET';
-      payload: {
-        widget: Omit<WidgetProps, 'id'>;
-      };
-    }
-  | {
-      type: 'UPDATE_WIDGET';
-      payload: {
-        id: string;
-        updates: Partial<WidgetProps>;
-      };
-    }
-  | {
-      type: 'DELETE_WIDGET';
-      payload: {
-        id: string;
-      };
-    }
-  | {
-      type: 'SET_WIDGETS';
-      payload: {
-        widgets: Record<string, WidgetProps>;
-      };
-    }
-  | {
-      type: 'UPDATE_LAYOUT';
-      payload: {
-        layout: { i: string; x: number; y: number; w: number; h: number }[];
-      };
-    };
+// export type WidgetProps = ValueCardWidgetProps | LineChartWidgetProps;
 
-export type WidgetState = {
-  layout: { i: string; x: number; y: number; w: number; h: number }[];
-  data: Record<string, WidgetProps>;
-};
+// export type WidgetAction =
+//   | {
+//       type: 'ADD_WIDGET';
+//       payload: {
+//         widget: Omit<WidgetProps, 'id'>;
+//       };
+//     }
+//   | {
+//       type: 'UPDATE_WIDGET';
+//       payload: {
+//         id: string;
+//         updates: Partial<WidgetProps>;
+//       };
+//     }
+//   | {
+//       type: 'DELETE_WIDGET';
+//       payload: {
+//         id: string;
+//       };
+//     }
+//   | {
+//       type: 'SET_WIDGETS';
+//       payload: {
+//         widgets: Record<string, WidgetProps>;
+//         layout: WidgetLayout[];
+//       };
+//     }
+//   | {
+//       type: 'UPDATE_LAYOUT';
+//       payload: {
+//         layout: WidgetLayout[];
+//       };
+//     }
+//   | {
+//       type: 'EDIT_MODE';
+//     }
+//   | {
+//       type: 'VIEW_MODE';
+//     };
 
-export const widgetReducer = (
-  state: WidgetState,
-  action: WidgetAction
-): WidgetState => {
-  switch (action.type) {
-    case 'ADD_WIDGET':
-      let id = Date.now().toString();
+// export type WidgetState = {
+//   layout: WidgetLayout[];
+//   data: Record<string, WidgetProps>;
+// };
 
-      return {
-        ...state,
-        layout: [...state.layout, { i: id, x: 0, y: Infinity, w: 2, h: 4 }],
-        data: {
-          ...state.data,
-          [id]: {
-            ...action.payload.widget,
-            id,
-          } as WidgetProps,
-        },
-      };
+// export const widgetReducer = (
+//   state: WidgetState,
+//   action: WidgetAction
+// ): WidgetState => {
+//   switch (action.type) {
+//     case 'ADD_WIDGET':
+//       let id: number = Date.now();
 
-    case 'UPDATE_WIDGET':
-      const existingWidget = state.data[action.payload.id];
+//       return {
+//         ...state,
+//         layout: [...state.layout, { i: id, x: 0, y: Infinity, w: 2, h: 4 }],
+//         data: {
+//           ...state.data,
+//           [id]: {
+//             ...action.payload.widget,
+//             id,
+//           } as WidgetProps,
+//         },
+//       };
 
-      if (!existingWidget) {
-        return state;
-      }
+//     case 'UPDATE_WIDGET':
+//       const existingWidget = state.data[action.payload.id];
 
-      return {
-        ...state,
-        data: {
-          ...state.data,
-          [action.payload.id]: {
-            ...state.data[action.payload.id],
-            ...action.payload.updates,
-          } as WidgetProps,
-        },
-      };
+//       if (!existingWidget) {
+//         return state;
+//       }
 
-    case 'DELETE_WIDGET':
-      const { [action.payload.id]: _, ...newData } = state.data;
-      return {
-        ...state,
-        layout: state.layout.filter((item) => item.i !== action.payload.id),
-        data: newData,
-      };
+//       return {
+//         ...state,
+//         data: {
+//           ...state.data,
+//           [action.payload.id]: {
+//             ...state.data[action.payload.id],
+//             ...action.payload.updates,
+//           } as WidgetProps,
+//         },
+//       };
 
-    case 'SET_WIDGETS':
-      return {
-        ...state,
-        data: action.payload.widgets,
-      };
+//     case 'DELETE_WIDGET':
+//       const { [action.payload.id]: _, ...newData } = state.data;
+//       return {
+//         ...state,
+//         layout: state.layout.filter((item) => item.i !== action.payload.id),
+//         data: newData,
+//       };
 
-    case 'UPDATE_LAYOUT':
-      return {
-        ...state,
-        layout: action.payload.layout,
-      };
+//     case 'SET_WIDGETS':
+//       return {
+//         ...state,
+//         layout: action.payload.layout,
+//         data: action.payload.widgets,
+//       };
 
-    default:
-      return state;
-  }
-};
+//     case 'UPDATE_LAYOUT':
+//       return {
+//         ...state,
+//         layout: action.payload.layout,
+//       };
 
-const WidgetRenderer: React.FC<WidgetProps> = (props) => {
-  switch (props.type) {
+//     default:
+//       return state;
+//   }
+// };
+
+const WidgetRenderer: React.FC<{ widget: Widget }> = ({ widget }) => {
+  const webSocketData = useWebSocketData();
+
+  switch (widget.type) {
     case 'value-card':
-      return <div>Value card value is {props.data.value}</div>;
+      const data: typeof widget.data =
+        widget.dataSubkey !== undefined
+          ? webSocketData?.[widget.dataKey]?.[widget.dataSubkey]
+          : webSocketData?.[widget.dataKey];
 
-    case 'line-chart':
+      // console.log('data', data);
       return (
         <div>
-          Line chart
-          <pre>{JSON.stringify(props.data, null, 2)}</pre>
+          {widget.label}'s value is {data ?? 'Loading...'}
         </div>
       );
+
+    // case 'line-chart':
+    //   return (
+    //     <div>
+    //       Line chart
+    //       <pre>{JSON.stringify(widget.data, null, 2)}</pre>
+    //     </div>
+    //   );
 
     default:
       return <div>Unknown widget type</div>;

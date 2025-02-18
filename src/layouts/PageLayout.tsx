@@ -16,7 +16,7 @@ const PageLayout = ({
 }: PropsWithChildren & PageLayoutProps) => {
   return (
     <Box
-      overflow={fixedHeight ? 'hidden' : 'auto'}
+      overflowX={fixedHeight ? 'hidden' : 'auto'}
       position={'relative'}
       height={fixedHeight ? '100%' : 'auto'}
     >

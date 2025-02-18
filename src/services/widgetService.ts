@@ -1,5 +1,4 @@
 import { apiCall } from '../apiClient';
-import { ApiResponse } from './dashboardService';
 
 export type Widget = {
   _id: string;
@@ -17,16 +16,71 @@ export type AddWidgetPayload = {
   subKey?: string;
 };
 
+export type ValidateWidgetSubkeyPayload = {
+  dashboardId: string;
+  dataKey: string;
+  dataSubKey: string;
+  widgetLabel: string;
+};
+
+type WidgetPayload = {
+  widgetAssignId: string;
+  widgetInfoId: string;
+  widgetLabel: string;
+  subscribeTopic?: string;
+  publishTopic?: string;
+  dataKey: string;
+  dataSubKey?: string;
+  layout: {
+    i: string;
+    x: number;
+    y: number;
+    h: number;
+    w: number;
+  };
+};
+
+export type WidgetResponse = {
+  _id: string;
+  widget_infoId: string;
+  widget_label: string;
+  publish_topic: string;
+  data_key: string;
+  data_sub_key: string;
+  layout: {
+    i: string;
+    x: number;
+    y: number;
+    h: number;
+    w: number;
+  };
+};
+
+export type SaveDashboardPayload = {
+  dashboardId: string;
+  updated_widgets: WidgetPayload[];
+  new_widgets: Omit<WidgetPayload, 'widgetAssignId'>[];
+};
+
 const WidgetApiService = {
-  getWidgets: () => apiCall<null, ApiResponse<Widget[]>>('get', `/widgets`),
+  getWidgets: () => apiCall<null, Widget[]>('get', `/widgets`),
   addWidget: (payload: AddWidgetPayload) =>
-    apiCall<AddWidgetPayload, ApiResponse<unknown>>(
+    apiCall<AddWidgetPayload, unknown>('post', '/users/create-widget', payload),
+
+  getWidgetsByDashboardId: (dashboardId: string) =>
+    apiCall<null, WidgetResponse[]>(
+      'get',
+      `/users/dashboards/${dashboardId}/widgets`
+    ),
+  validateWidgetSubkey: (payload: ValidateWidgetSubkeyPayload) =>
+    apiCall<ValidateWidgetSubkeyPayload, any>(
       'post',
-      '/users/create-widget',
+      '/is_validDataKey',
       payload
     ),
 
-  getWidgetsByDashboardId: (id: string) => {},
+  saveDashboard: (payload: SaveDashboardPayload) =>
+    apiCall<SaveDashboardPayload, unknown>('post', '/assignWidgets', payload),
 };
 
 export default WidgetApiService;

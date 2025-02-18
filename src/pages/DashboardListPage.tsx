@@ -8,6 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { RiAddLine, RiResetRightLine, RiSearchLine } from '@remixicon/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CommonDialog } from '../components/common/CommonDialog';
 import CreateDashboardForm from '../components/dashboard/CreateDashboardForm';
 import {
@@ -16,9 +17,8 @@ import {
   PaginationPrevTrigger,
   PaginationRoot,
 } from '../components/ui/pagination';
-import PageLayout from '../layouts/PageLayout';
-import { useNavigate } from 'react-router-dom';
 import { useGetAllDashboards } from '../hooks/dashboard/useDashboard';
+import PageLayout from '../layouts/PageLayout';
 
 const DashboardListPage = () => {
   const [open, setOpen] = useState(false);
@@ -39,10 +39,9 @@ const DashboardListPage = () => {
         <CreateDashboardForm onOpenChange={handleOpenChange} />
       </CommonDialog>
       <Stack
-        boxShadow={'md'}
         rounded={'sm'}
         height={'calc(0.95 * (100vh - 78px))'}
-        bg={'Background'}
+        bg={'transparent'}
       >
         <Flex justifyContent={'space-between'} p={4} alignItems={'center'}>
           <Heading>Dashboards</Heading>
@@ -63,7 +62,7 @@ const DashboardListPage = () => {
           </HStack>
         </Flex>
         <Table.ScrollArea height={'full'}>
-          <Table.Root size='md' stickyHeader interactive>
+          <Table.Root size='md' stickyHeader interactive striped>
             <Table.Header>
               <Table.Row bg='bg.subtle'>
                 <Table.ColumnHeader>Id</Table.ColumnHeader>
@@ -73,10 +72,14 @@ const DashboardListPage = () => {
             </Table.Header>
 
             <Table.Body>
-              {data?.data?.data?.map((item) => (
+              {data?.data.map((item) => (
                 <Table.Row
                   key={item._id}
-                  onClick={() => navigate(`/dashboards/${item._id}`)}
+                  onClick={() =>
+                    navigate(
+                      `/dashboards/${item._id}?name=${item.dashboard_name}deviceId=${item.deviceUniqueId}`
+                    )
+                  }
                 >
                   <Table.Cell>{item._id}</Table.Cell>
                   <Table.Cell>{item.dashboard_name}</Table.Cell>

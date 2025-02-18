@@ -2,31 +2,23 @@ import { HStack, Input, Stack } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
+import { useValidateWidget } from '../../hooks/widgets/useValidateWidget';
 import { addWidgetSchema } from '../../schemas';
 import { Button } from '../ui/button';
 import { Field } from '../ui/field';
-import { WidgetProps } from '../widgets/WidgetRenderer';
+import { useEffect } from 'react';
+import { Widget } from '../context/DashboardRefactor';
 
 type FormData = yup.InferType<typeof addWidgetSchema>;
 
 type FormDialogProps = {
   onOpenChange: (open: boolean) => void;
-  onAdd: (widget: Omit<WidgetProps, 'id'>) => void;
+  onAdd: (widgetInfo: Pick<Widget, 'dataKey' | 'dataSubkey' | 'label'>) => void;
 };
 
-type AddWidgetFormProps = FormDialogProps & {
-  widgetDetails: {
-    name: string;
-    type: string;
-    dashboardId: string;
-  };
-};
+type AddWidgetFormProps = FormDialogProps;
 
-const AddWidgetForm = ({
-  onOpenChange,
-  onAdd,
-  widgetDetails,
-}: AddWidgetFormProps) => {
+const AddWidgetForm = ({ onOpenChange, onAdd }: AddWidgetFormProps) => {
   const {
     register,
     formState: { errors },
@@ -37,39 +29,45 @@ const AddWidgetForm = ({
   });
 
   const datakey = watch('dataKey');
+  const dataSubkey = watch('dataSubKey');
+  const widgetName = watch('widgetName');
   const hasDatakey = !!datakey;
-  // const { addWidget, isLoading } = useAddWidget();
+  const { error, validate, clearErrors, setSubmitError } = useValidateWidget();
 
-  function onSubmit(data: FormData) {
-    // addWidget({
-    //   dashboardId: widgetDetails.dashboardId,
-    //   type: widgetDetails.type,
-    //   name: data.widgetName,
-    //   mainKey: data.mainKey,
-    //   subKey: data.subKey,
-    // });
+  async function onSubmit(data: FormData) {
+    if (data.widgetName && data.dataSubKey) {
+      const errors = await validate({
+        dataKey: data.dataKey,
+        dataSubKey: data.dataSubKey,
+        widgetName: data.widgetName,
+      });
 
-    onAdd({
-      dashboardId: widgetDetails.dashboardId,
-      type: 'value-card',
-      name: data.widgetName,
-      dataKey: data.dataKey ?? '',
-      dataSubkey: data.dataSubKey ?? '',
-      data: {
-        value: '0',
-      },
-    });
-
-    onOpenChange(false);
+      if (errors) {
+        setSubmitError({
+          dataSubKey: errors.dataSubKey,
+          widgetName: errors.widgetName,
+        });
+      } else {
+        onAdd({
+          dataKey: data.dataKey,
+          dataSubkey: data.dataSubKey,
+          label: data.widgetName,
+        });
+      }
+    }
   }
+
+  useEffect(() => {
+    clearErrors();
+  }, [dataSubkey, widgetName]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <Stack>
         <Field
           label='Widget Name'
-          errorText={errors.widgetName?.message}
-          invalid={!!errors.widgetName}
+          errorText={errors.widgetName?.message || error.widgetName}
+          invalid={!!errors.widgetName || !!error.widgetName}
           required
           colorPalette={'teal'}
         >
@@ -100,8 +98,8 @@ const AddWidgetForm = ({
         {hasDatakey && (
           <Field
             label='Data Sub Key'
-            errorText={errors.dataSubKey?.message}
-            invalid={!!errors.dataSubKey}
+            errorText={errors.dataSubKey?.message || error.dataSubKey}
+            invalid={!!errors.dataSubKey || !!error.dataSubKey}
             colorPalette={'teal'}
             helperText='Data Sub key for the widget'
           >

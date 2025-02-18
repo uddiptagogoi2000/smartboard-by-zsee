@@ -6,10 +6,11 @@ import useBoundStore from '../store';
 
 function useSyncLocalStorageWithStore() {
   const { authState } = useLocalStorageManager();
-  const { setIsAuthenticated } = useBoundStore();
+  const { setIsAuthenticated, setToken } = useBoundStore();
 
   useEffect(() => {
     setIsAuthenticated(authState.isAuthenticated);
+    setToken(authState.at);
   }, [authState.isAuthenticated]);
 
   console.log({ authState });

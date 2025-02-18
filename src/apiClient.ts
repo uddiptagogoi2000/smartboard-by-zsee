@@ -2,14 +2,14 @@ import axios, { AxiosResponse } from 'axios';
 import useBoundStore from './store';
 
 export const BASE_URL = import.meta.env.VITE_API_BASE_URL;
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
 export const api = axios.create({
   baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  withCredentials: true,
+  // withCredentials: true,
 });
 
 // Flag to prevent multiple refresh attempts
@@ -32,6 +32,7 @@ const processQueue = (error: any, token: string | null = null) => {
 api.interceptors.request.use(
   (config) => {
     const token = useBoundStore.getState().token;
+    console.log('token', token);
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -121,14 +122,20 @@ api.interceptors.response.use(
   }
 );
 
+export type ApiResponse<T> = {
+  statusCode: number;
+  data: T;
+  message: string;
+};
+
 export type ApiMethod = 'get' | 'post' | 'put' | 'delete';
 
 export const apiCall = <TPayload, TResponse>(
   method: ApiMethod,
   url: string,
   payload?: TPayload
-): Promise<AxiosResponse<TResponse>> => {
-  return api.request<TResponse>({
+): Promise<AxiosResponse<ApiResponse<TResponse>>> => {
+  return api.request({
     method,
     url,
     data: payload,

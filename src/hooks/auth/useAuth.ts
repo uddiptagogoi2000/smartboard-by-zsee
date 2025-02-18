@@ -28,13 +28,16 @@ function useAuth() {
     onSuccess: (data) => {
       console.log('Signin successful', data);
       setUser({
-        firstName: data.data.data.user.firstName,
-        email: data.data.data.user.email,
+        firstName: data?.data?.data?.user?.firstName,
+        email: data?.data?.data?.user?.email,
       });
-      setToken(data.data.data.accessToken);
+      setToken(data.data?.data?.accessToken);
       setIsAuthenticated(true);
-      updateAuthStateLS(true);
-      console.log(useBoundStore.getState());
+      updateAuthStateLS({
+        isAuthenticated: true,
+        at: data?.data?.data?.accessToken,
+      });
+      // console.log(useBoundStore.getState());
       navigate('/dashboards');
     },
     onError: (error) => {

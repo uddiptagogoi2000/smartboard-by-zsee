@@ -32,6 +32,7 @@ export const signinSchema = yup.object({
 export const createDashboardSchema = yup.object({
   title: yup.string().max(100).required('Title is required'),
   description: yup.string().max(300),
+  deviceId: yup.array().of(yup.string().required('Device ID is required')),
 });
 
 export const addWidgetSchema = yup.object({

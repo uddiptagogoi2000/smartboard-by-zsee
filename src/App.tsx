@@ -15,6 +15,7 @@ import RootLayout from './layouts/RootLayout';
 import Public from './components/routes/Public';
 import DashboardListPage from './pages/DashboardListPage';
 import DashboardDetailsPage from './pages/DashboardDetailsPage';
+import { DashboardProvider } from './components/context/DashboardRefactor';
 
 const queryClient = new QueryClient();
 
@@ -63,7 +64,11 @@ function App() {
                   />
                   <Route
                     path='/dashboards/:id'
-                    element={<DashboardDetailsPage />}
+                    element={
+                      <DashboardProvider>
+                        <DashboardDetailsPage />
+                      </DashboardProvider>
+                    }
                   />
                   <Route path='/components' element={<ComponentPlayground />} />
                   <Route path='*' element={<NotFound />} />

@@ -1,13 +1,51 @@
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
 import WidgetApiService, {
   AddWidgetPayload,
 } from '../../services/widgetService';
+import { useDashboard } from '../../components/context/DashboardRefactor';
 
-export const useGetWidgets = () => {
-  return useQuery({
+export const useGetWidgets = (isOpen: boolean) => {
+  const queryInfo = useQuery({
     queryKey: ['widgets'],
     queryFn: () => WidgetApiService.getWidgets(),
+    enabled: isOpen,
   });
+
+  return {
+    ...queryInfo,
+    data: queryInfo.data?.data,
+  };
+};
+
+export const useGetWidgetsByDashboardId = (
+  isEditing: boolean,
+  dashboardId?: string
+) => {
+  const queryInfo = useQuery({
+    queryKey: ['widgets', dashboardId],
+    queryFn: () => WidgetApiService.getWidgetsByDashboardId(dashboardId ?? ''),
+    enabled: !!dashboardId,
+    refetchOnWindowFocus: () => (isEditing ? false : true),
+  });
+
+  return {
+    ...queryInfo,
+    data: queryInfo.data?.data,
+  };
+};
+
+export const useValidateWidgetSubkey = () => {
+  const mutation = useMutation({
+    mutationFn: WidgetApiService.validateWidgetSubkey,
+    onSuccess: () => {
+      console.log('Widget subkey is valid');
+    },
+    onError: (error) => {
+      console.error('Widget subkey is invalid', error);
+    },
+  });
+
+  return mutation;
 };
 
 export const useAddWidget = () => {
@@ -27,4 +65,24 @@ export const useAddWidget = () => {
     },
     isLoading: mutation.isPending,
   };
+};
+
+export const useSaveDashboard = (dashboardId: string) => {
+  const { dispatch } = useDashboard();
+  const queryClient = new QueryClient();
+
+  const mutation = useMutation({
+    mutationFn: WidgetApiService.saveDashboard,
+    onSuccess: () => {
+      console.log('Dashboard saved successfully');
+      queryClient.invalidateQueries({ queryKey: ['widgets', dashboardId] });
+
+      dispatch({ type: 'TOGGLE_STATE', payload: 'readonly' });
+    },
+    onError: (error) => {
+      console.error('Failed to save dashboard', error);
+    },
+  });
+
+  return mutation;
 };
