@@ -38,6 +38,7 @@ const DashboardDetailsPage = () => {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const deviceId = searchParams.get('deviceId') ?? '';
+  console.log({ deviceId });
 
   const widgetType = data?.data.find((wt) => wt._id === widgetTypeId);
   const isEditing = !!widgetTypeId;
@@ -52,7 +53,7 @@ const DashboardDetailsPage = () => {
   }
 
   return (
-    <WebSocketProvider deviceId={'1002'}>
+    <WebSocketProvider deviceId={deviceId}>
       <CommonDialog
         title={`Add widget: ${widgetType?.widget_name}`}
         open={isEditing}

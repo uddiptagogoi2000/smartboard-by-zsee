@@ -22,6 +22,7 @@ import {
   DrawerRoot,
   DrawerTitle,
 } from '../ui/drawer';
+import { useNavigate } from 'react-router-dom';
 
 // Base interface for common properties
 interface BaseNavItem {
@@ -60,7 +61,19 @@ const sidebarSections: SidebarNavSection[] = [
         icon: <RiDashboardLine />,
         name: 'Dashboard',
         type: 'link',
-        link: '/',
+        link: '/dashboards',
+      },
+      {
+        icon: <RiDeviceLine />,
+        name: 'Devices',
+        type: 'link',
+        link: '/devices',
+      },
+      {
+        icon: <RiLayout2Line />,
+        name: 'Topics',
+        type: 'link',
+        link: '/topics',
       },
       {
         icon: <RiBubbleChartLine />,
@@ -101,6 +114,7 @@ const Sidebar = ({ isVisible, onHide }: SideBarProps): JSX.Element => {
   const [sidebarObj, setSidebarObj] = useState(sidebarSections);
   const { isMobileSidebarOpen, onMobileSidebarOpen } =
     useDashboardLayoutContext();
+  const navigate = useNavigate();
 
   const handleOpenChange = (
     sectionIndex: number,
@@ -217,7 +231,7 @@ const Sidebar = ({ isVisible, onHide }: SideBarProps): JSX.Element => {
                   width={'full'}
                   variant={'ghost'}
                   justifyContent={'start'}
-                  colorPalette={'teal'}
+                  // colorPalette={'teal'}
                   rounded={'full'}
                   // bg={'teal.600'}
                   // color='white'
@@ -226,6 +240,7 @@ const Sidebar = ({ isVisible, onHide }: SideBarProps): JSX.Element => {
                       _dark: 'brand.darkborderline',
                     },
                   }}
+                  onClick={() => navigate(item.link)}
                 >
                   {item.icon}
                   {item.name}

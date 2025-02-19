@@ -19,11 +19,28 @@ import {
 } from '../components/ui/pagination';
 import { useGetAllDashboards } from '../hooks/dashboard/useDashboard';
 import PageLayout from '../layouts/PageLayout';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { DashboardService } from '../services/dashboardService';
 
 const DashboardListPage = () => {
   const [open, setOpen] = useState(false);
   const { data, isLoading } = useGetAllDashboards();
   const navigate = useNavigate();
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: DashboardService.createDashboard,
+    onSuccess: () => {
+      console.log('Topic created successfully');
+      queryClient.invalidateQueries({ queryKey: ['getAllDashboards'] });
+
+      setOpen(false);
+    },
+    onError: (error) => {
+      console.error('Failed to create topic', error);
+    },
+  });
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
@@ -36,7 +53,16 @@ const DashboardListPage = () => {
         open={open}
         onOpenChange={handleOpenChange}
       >
-        <CreateDashboardForm onOpenChange={handleOpenChange} />
+        <CreateDashboardForm
+          onOpenChange={handleOpenChange}
+          onAdd={(dashboardInfo) => {
+            mutation.mutate({
+              dashboard_name: dashboardInfo.title,
+              device_id: dashboardInfo.deviceId,
+              description: dashboardInfo.description,
+            });
+          }}
+        />
       </CommonDialog>
       <Stack
         rounded={'sm'}
@@ -62,9 +88,9 @@ const DashboardListPage = () => {
           </HStack>
         </Flex>
         <Table.ScrollArea height={'full'}>
-          <Table.Root size='md' stickyHeader interactive striped>
+          <Table.Root size='lg' stickyHeader interactive striped>
             <Table.Header>
-              <Table.Row bg='bg.subtle'>
+              <Table.Row bg='bg.muted'>
                 <Table.ColumnHeader>Id</Table.ColumnHeader>
                 <Table.ColumnHeader>Title</Table.ColumnHeader>
                 <Table.ColumnHeader>Created By</Table.ColumnHeader>

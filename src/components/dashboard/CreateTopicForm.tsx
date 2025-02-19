@@ -1,60 +1,56 @@
 import {
+  Alert,
   createListCollection,
   HStack,
   Input,
   Stack,
-  Textarea,
 } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useMemo, useRef } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import * as yup from 'yup';
-import { createDashboardSchema } from '../../schemas';
+import { useGetDevicesByUser } from '../../hooks/dashboard/useDashboard';
+import { createTopicSchema } from '../../schemas';
 import { capitalizeFirstLetter } from '../../utils';
 import { Button } from '../ui/button';
 import { Field } from '../ui/field';
-import { useQuery } from '@tanstack/react-query';
-import { DashboardService } from '../../services/dashboardService';
 import {
   SelectContent,
+  SelectItem,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
-  SelectItem,
 } from '../ui/select';
-import { useMemo, useRef } from 'react';
 
-type FormData = yup.InferType<typeof createDashboardSchema>;
+type FormData = yup.InferType<typeof createTopicSchema>;
 
 type FormDialogProps = {
   onOpenChange?: (open: boolean) => void;
-  onAdd: (dashboardInfo: {
-    title: string;
-    description: string;
+  onAdd: (topicInfo: {
     deviceId: string;
+    topicForControl: string;
+    topicForPublish: string;
   }) => void;
 };
 
-const CreateDashboardForm = ({ onOpenChange, onAdd }: FormDialogProps) => {
+const CreateTopicForm = ({ onOpenChange, onAdd }: FormDialogProps) => {
   const {
     handleSubmit,
     register,
     formState: { errors },
     control,
   } = useForm<FormData>({
-    resolver: yupResolver(createDashboardSchema, { abortEarly: false }),
+    resolver: yupResolver(createTopicSchema, { abortEarly: false }),
   });
-
   const contentRef = useRef<HTMLDivElement>(null);
 
-  const { data } = useQuery({
-    queryKey: ['devices'],
-    queryFn: DashboardService.getDevicesByUser,
-  });
+  const { data } = useGetDevicesByUser();
+  console.log('errors', errors);
 
   const devices = useMemo(() => {
     return createListCollection({
       items:
-        data?.data?.data.map((item) => ({
+        data?.data?.map((item) => ({
           label: item.deviceName,
           value: item.deviceUniqueId,
         })) || [],
@@ -62,31 +58,41 @@ const CreateDashboardForm = ({ onOpenChange, onAdd }: FormDialogProps) => {
   }, [data]);
 
   const onSubmit = handleSubmit((data) => {
+    console.log('here', data);
     onAdd({
-      title: data.title,
-      description: data.description ?? '',
-      deviceId: data.deviceId[0] ?? '',
+      deviceId: data.deviceId?.[0] || '',
+      topicForControl: data.topicForControl || '',
+      topicForPublish: data.topicForPublish || '',
     });
   });
 
   return (
     <form onSubmit={onSubmit} noValidate>
+      {Object.keys(errors).includes('') ? (
+        <Alert.Root status='error' mb={5}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>Invalid Fields</Alert.Title>
+            <Alert.Description>
+              {errors['' as keyof typeof errors]?.message}
+            </Alert.Description>
+          </Alert.Content>
+        </Alert.Root>
+      ) : (
+        <Alert.Root mb={5}>
+          <Alert.Indicator />
+          <Alert.Content>
+            <Alert.Title>At Least One Topic Required</Alert.Title>
+            <Alert.Description>
+              You need to enter at least one topic—either a 'Control Topic' or a
+              'Publish Topic'. If you're unsure, enter the one that best fits
+              your use case!
+            </Alert.Description>
+          </Alert.Content>
+          {/* <CloseButton pos='relative' top='-2' insetEnd='-2' /> */}
+        </Alert.Root>
+      )}
       <Stack ref={contentRef}>
-        <Field
-          label='Title'
-          errorText={capitalizeFirstLetter(errors.title?.message)}
-          invalid={!!errors.title}
-          required
-          colorPalette={'teal'}
-        >
-          <Input
-            type='text'
-            placeholder='Title'
-            colorPalette={'white'}
-            formNoValidate
-            {...register('title')}
-          />
-        </Field>
         <Field
           label='Device'
           invalid={!!errors.deviceId}
@@ -121,12 +127,32 @@ const CreateDashboardForm = ({ onOpenChange, onAdd }: FormDialogProps) => {
           />
         </Field>
         <Field
-          label='Description'
-          invalid={!!errors.description}
-          helperText='A short description of dashboard'
-          errorText={errors.description?.message}
+          label='Control Topic'
+          errorText={capitalizeFirstLetter(errors.topicForControl?.message)}
+          invalid={!!errors.topicForControl}
+          colorPalette={'teal'}
         >
-          <Textarea colorPalette={'teal'} {...register('description')} />
+          <Input
+            type='text'
+            placeholder='Control Topic'
+            colorPalette={'white'}
+            formNoValidate
+            {...register('topicForControl')}
+          />
+        </Field>
+        <Field
+          label='Publish Topic'
+          invalid={!!errors.topicForPublish}
+          errorText={errors.topicForPublish?.message}
+          colorPalette={'teal'}
+        >
+          <Input
+            type='text'
+            placeholder='Publish Topic'
+            colorPalette={'white'}
+            formNoValidate
+            {...register('topicForPublish')}
+          />
         </Field>
       </Stack>
       <HStack gap={4} justifyContent={'flex-end'} mt={5}>
@@ -145,4 +171,4 @@ const CreateDashboardForm = ({ onOpenChange, onAdd }: FormDialogProps) => {
   );
 };
 
-export default CreateDashboardForm;
+export default CreateTopicForm;

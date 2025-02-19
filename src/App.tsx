@@ -16,6 +16,7 @@ import Public from './components/routes/Public';
 import DashboardListPage from './pages/DashboardListPage';
 import DashboardDetailsPage from './pages/DashboardDetailsPage';
 import { DashboardProvider } from './components/context/DashboardRefactor';
+import TopicListPage from './pages/TopicListPage';
 
 const queryClient = new QueryClient();
 
@@ -70,6 +71,8 @@ function App() {
                       </DashboardProvider>
                     }
                   />
+                  <Route path='/topics' element={<TopicListPage />} />
+                  {/* <Route path='/devices' element={<DeviceListPage />} /> */}
                   <Route path='/components' element={<ComponentPlayground />} />
                   <Route path='*' element={<NotFound />} />
                 </Route>

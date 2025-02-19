@@ -101,6 +101,17 @@ export function dashboardReducer(
           value: action.payload,
         };
       }
+
+      if (action.type === 'SET_WIDGETS') {
+        return {
+          ...state,
+          value: 'readonly',
+          context: {
+            ...state.context,
+            widgets: action.payload,
+          },
+        };
+      }
       return state;
     }
     case 'editing': {
@@ -120,12 +131,15 @@ export function dashboardReducer(
           state.context.widgets[0] // Start with the first widget
         );
 
-        const yPos = maxYWidget.layout.y + maxYWidget.layout.h;
+        const yPos =
+          state.context.widgets.length > 0
+            ? maxYWidget.layout.y + maxYWidget.layout.h
+            : 0;
 
         const newWidget: Widget = {
           ...action.payload,
           id,
-          layout: { i: id, x: 0, y: yPos, w: 2, h: 2 },
+          layout: { i: id, x: 0, y: yPos, w: 2, h: 3 },
         };
 
         return {
@@ -228,6 +242,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
     isLoading,
     isFetching,
     isFetchedAfterMount,
+    refetch,
   } = useGetWidgetsByDashboardId(state.value === 'editing', dashboardId);
 
   console.log({
@@ -241,7 +256,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   });
 
   useEffect(() => {
-    if (data && isFetched && isFetchedAfterMount) {
+    if (data && isFetched && isFetchedAfterMount && !isFetching) {
       console.log('setting widgets');
       dispatch({
         type: 'SET_WIDGETS',
@@ -257,16 +272,16 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
           })) ?? [],
       });
     }
-  }, [data, isFetched, isFetchedAfterMount]);
+  }, [data, isFetched, isFetchedAfterMount, isFetching]);
 
   useEffect(() => {
-    console.log('isFetching', isFetching);
-    if (isFetching) {
-      dispatch({
-        type: 'TOGGLE_STATE',
-        payload: 'fetching',
-      });
-    }
+    // console.log('isFetching', isFetching);
+    // if (isFetching) {
+    //   dispatch({
+    //     type: 'TOGGLE_STATE',
+    //     payload: 'fetching',
+    //   });
+    // }
   }, [isFetching]);
 
   // useEffect(() => {
@@ -278,11 +293,11 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   //   }
   // }, [isFetched, isFetchedAfterMount]);
 
-  // useEffect(() => {
-  //   if (state.value === 'readonly') {
-  //     refetch();
-  //   }
-  // }, [state.value]);
+  useEffect(() => {
+    if (state.value === 'readonly') {
+      refetch();
+    }
+  }, [state.value]);
 
   return (
     <DashboardContext.Provider value={{ state, dispatch }}>
