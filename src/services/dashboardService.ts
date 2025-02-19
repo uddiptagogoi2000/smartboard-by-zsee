@@ -15,11 +15,10 @@ type Device = {
 };
 
 type Topic = {
-  _id: string;
-  user_id: string;
-  device_id: string;
-  topic_for_publish: string;
-  topic_for_control: string;
+  topicId: string;
+  deviceId: string;
+  topicForPublish: string;
+  topicForControl: string;
 };
 
 type CreateTopicPayload = {
@@ -45,7 +44,7 @@ export const DashboardService = {
     ),
 
   getDevicesByUser: () => apiCall<null, Device[]>('get', '/devicesByUser'),
-  getTopicList: () => apiCall<null, Topic[]>('get', '/topics'),
+  getTopicList: () => apiCall<null, Topic[]>('get', '/topicsByUser'),
   createTopic: (payload: CreateTopicPayload) =>
     apiCall<CreateTopicPayload, unknown>('post', '/topics', payload),
 };

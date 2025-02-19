@@ -7,7 +7,7 @@ type DashboardAction =
       type: 'ADD_WIDGET';
       payload: Pick<
         Widget,
-        'dataKey' | 'dataSubkey' | 'label' | 'type' | 'typeId'
+        'dataKey' | 'dataSubKey' | 'label' | 'type' | 'typeId'
       >;
     }
   | {
@@ -56,7 +56,7 @@ export type BaseWidget = {
   typeId: string;
   label: string;
   dataKey: string;
-  dataSubkey?: string;
+  dataSubKey?: string;
   layout: WidgetLayout;
 };
 
@@ -85,10 +85,10 @@ export function dashboardReducer(
   state: Dashboard,
   action: DashboardAction
 ): Dashboard {
-  console.log({
-    state,
-    action,
-  });
+  // console.log({
+  //   state,
+  //   action,
+  // });
 
   switch (state.value) {
     case 'readonly': {
@@ -268,7 +268,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             type: 'value-card',
             dataKey: widget.data_key,
             layout: { ...widget.layout, i: widget._id },
-            dataSubkey: widget.data_sub_key,
+            dataSubKey: widget.data_sub_key,
           })) ?? [],
       });
     }

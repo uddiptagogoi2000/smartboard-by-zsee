@@ -40,7 +40,7 @@
 //         type: 'value-card',
 //         dashboardId: 'dashboard1',
 //         dataKey: 'payload',
-//         dataSubkey: 'battery_level',
+//         dataSubKey: 'battery_level',
 //         data: '50',
 //       },
 //     },
@@ -87,7 +87,7 @@
 //             infoId: widget.widget_infoId,
 //             name: widget.widget_label,
 //             dataKey: widget.data_key,
-//             dataSubkey: widget.data_sub_key,
+//             dataSubKey: widget.data_sub_key,
 //             type: 'value-card',
 //             dashboardId: dashboardId ?? '',
 //           };
@@ -176,7 +176,7 @@
 //           widgetInfoId: widget.infoId as string,
 //           widgetLabel: widget.name,
 //           dataKey: widget.dataKey,
-//           dataSubKey: widget.dataSubkey,
+//           dataSubKey: widget.dataSubKey,
 //           layout: {
 //             h: layout.h,
 //             i: layout.i,
@@ -197,7 +197,7 @@
 //           widgetInfoId: widget.infoId as string,
 //           widgetLabel: widget.name as string,
 //           dataKey: widget.dataKey,
-//           dataSubKey: widget.dataSubkey,
+//           dataSubKey: widget.dataSubKey,
 //           layout,
 //         };
 //       }),

@@ -62,13 +62,13 @@ const DashboardDetailsPage = () => {
         <AddWidgetForm
           onOpenChange={handleOpenChange}
           onAdd={(
-            widgetInfo: Pick<Widget, 'dataKey' | 'dataSubkey' | 'label'>
+            widgetInfo: Pick<Widget, 'dataKey' | 'dataSubKey' | 'label'>
           ) => {
             dispatch({
               type: 'ADD_WIDGET',
               payload: {
                 dataKey: widgetInfo.dataKey,
-                dataSubkey: widgetInfo.dataSubkey,
+                dataSubKey: widgetInfo.dataSubKey,
                 label: widgetInfo.label,
                 type: 'value-card',
                 typeId: widgetTypeId!,
@@ -204,7 +204,7 @@ const DashboardDetailsPage = () => {
                           dashboardId: id ?? '',
                           new_widgets: newWidgetsArray.map((widget) => ({
                             dataKey: widget.dataKey,
-                            dataSubkey: widget.dataSubkey,
+                            dataSubKey: widget.dataSubKey,
                             widgetInfoId: widget.typeId,
                             widgetLabel: widget.label,
                             layout: widget.layout,
@@ -212,7 +212,7 @@ const DashboardDetailsPage = () => {
                           updated_widgets: updatedWidgetsArray.map(
                             (widget) => ({
                               dataKey: widget.dataKey,
-                              dataSubkey: widget.dataSubkey,
+                              dataSubKey: widget.dataSubKey,
                               widgetAssignId: widget.id,
                               widgetInfoId: widget.typeId,
                               widgetLabel: widget.label,

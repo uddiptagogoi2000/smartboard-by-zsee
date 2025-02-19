@@ -23,7 +23,7 @@ export function useValidateWidget() {
       );
       const dataSubKeyTaken = state.context.widgets.some(
         (widget) =>
-          widget.dataKey === dataKey && widget.dataSubkey === dataSubKey
+          widget.dataKey === dataKey && widget.dataSubKey === dataSubKey
       );
 
       if (widgetNameTaken || dataSubKeyTaken) {

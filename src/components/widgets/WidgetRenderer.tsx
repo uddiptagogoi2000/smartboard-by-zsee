@@ -8,7 +8,7 @@ import { useWebSocketData } from '../context/WebSocketProvider';
 //   type: string;
 //   dashboardId: string;
 //   dataKey: string;
-//   dataSubkey?: string;
+//   dataSubKey?: string;
 // }
 
 // interface ValueCardWidgetProps extends BaseWidgetProps {
@@ -140,13 +140,14 @@ import { useWebSocketData } from '../context/WebSocketProvider';
 
 const WidgetRenderer: React.FC<{ widget: Widget }> = ({ widget }) => {
   const webSocketData = useWebSocketData();
+  console.log('widget', widget);
 
   switch (widget.type) {
     case 'value-card':
       const data: typeof widget.data =
-        widget.dataSubkey !== undefined
-          ? webSocketData?.[widget.dataKey]?.[widget.dataSubkey]
-          : webSocketData?.[widget.dataKey];
+        widget.dataSubKey !== undefined
+          ? webSocketData?.[widget.dataKey]?.[widget.dataSubKey]
+          : 'NO data';
 
       // console.log('data', data);
       return (

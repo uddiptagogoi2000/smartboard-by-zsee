@@ -13,7 +13,7 @@ type FormData = yup.InferType<typeof addWidgetSchema>;
 
 type FormDialogProps = {
   onOpenChange: (open: boolean) => void;
-  onAdd: (widgetInfo: Pick<Widget, 'dataKey' | 'dataSubkey' | 'label'>) => void;
+  onAdd: (widgetInfo: Pick<Widget, 'dataKey' | 'dataSubKey' | 'label'>) => void;
 };
 
 type AddWidgetFormProps = FormDialogProps;
@@ -29,7 +29,7 @@ const AddWidgetForm = ({ onOpenChange, onAdd }: AddWidgetFormProps) => {
   });
 
   const datakey = watch('dataKey');
-  const dataSubkey = watch('dataSubKey');
+  const dataSubKey = watch('dataSubKey');
   const widgetName = watch('widgetName');
   const hasDatakey = !!datakey;
   const { error, validate, clearErrors, setSubmitError } = useValidateWidget();
@@ -50,7 +50,7 @@ const AddWidgetForm = ({ onOpenChange, onAdd }: AddWidgetFormProps) => {
       } else {
         onAdd({
           dataKey: data.dataKey,
-          dataSubkey: data.dataSubKey,
+          dataSubKey: data.dataSubKey,
           label: data.widgetName,
         });
       }
@@ -59,7 +59,7 @@ const AddWidgetForm = ({ onOpenChange, onAdd }: AddWidgetFormProps) => {
 
   useEffect(() => {
     clearErrors();
-  }, [dataSubkey, widgetName]);
+  }, [dataSubKey, widgetName]);
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>

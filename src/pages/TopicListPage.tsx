@@ -96,16 +96,16 @@ const TopicListPage = () => {
             <Table.Body>
               {data?.data.map((item) => (
                 <Table.Row
-                  key={item.device_id}
+                  key={item.deviceId}
                   // onClick={() =>
                   //   navigate(
                   //     `/dashboards/${item._id}?name=${item.dashboard_name}&deviceId=${item.deviceUniqueId}`
                   //   )
                   // }
                 >
-                  <Table.Cell>{item.device_id}</Table.Cell>
-                  <Table.Cell>{item.topic_for_control}</Table.Cell>
-                  <Table.Cell>{item.topic_for_publish}</Table.Cell>
+                  <Table.Cell>{item.deviceId}</Table.Cell>
+                  <Table.Cell>{item.topicForControl}</Table.Cell>
+                  <Table.Cell>{item.topicForPublish}</Table.Cell>
                 </Table.Row>
               ))}
             </Table.Body>
