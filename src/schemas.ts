@@ -67,3 +67,8 @@ export const addWidgetSchema = yup.object({
 
   dataSubKey: yup.string(),
 });
+
+export const AddDeviceFormSchema = yup.object({
+  deviceName : yup.string().max(100).required('Title is required'),
+  deviceType: yup.string().max(300).required('Device type is required'),
+});
