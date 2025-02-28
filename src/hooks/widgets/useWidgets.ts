@@ -1,4 +1,9 @@
-import { QueryClient, useMutation, useQuery } from '@tanstack/react-query';
+import {
+  QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import WidgetApiService, {
   AddWidgetPayload,
 } from '../../services/widgetService';
@@ -85,4 +90,19 @@ export const useSaveDashboard = (dashboardId: string) => {
   });
 
   return mutation;
+};
+
+// control widgets update api
+export const useUpdateControlWidget = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: WidgetApiService.updateButton,
+    onSuccess: () => {
+      console.log('Button updated successfully');
+      queryClient.invalidateQueries({ queryKey: ['widgets'] });
+    },
+    onError: (error) => {
+      console.error('Failed to update button', error);
+    },
+  });
 };

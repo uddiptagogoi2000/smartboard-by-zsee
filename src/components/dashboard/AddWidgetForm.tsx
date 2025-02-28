@@ -7,13 +7,15 @@ import { addWidgetSchema } from '../../schemas';
 import { Button } from '../ui/button';
 import { Field } from '../ui/field';
 import { useEffect } from 'react';
-import { Widget } from '../context/DashboardRefactor';
+import { DashboardWidget } from '../context/DashboardRefactor';
 
 type FormData = yup.InferType<typeof addWidgetSchema>;
 
 type FormDialogProps = {
   onOpenChange: (open: boolean) => void;
-  onAdd: (widgetInfo: Pick<Widget, 'dataKey' | 'dataSubKey' | 'label'>) => void;
+  onAdd: (
+    widgetInfo: Pick<DashboardWidget, 'dataKey' | 'dataSubKey' | 'label'>
+  ) => void;
 };
 
 type AddWidgetFormProps = FormDialogProps;

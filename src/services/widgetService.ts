@@ -25,10 +25,12 @@ export type ValidateWidgetSubkeyPayload = {
 
 type WidgetPayload = {
   widgetAssignId: string;
+  widgetType: string;
   widgetInfoId: string;
   widgetLabel: string;
   subscribeTopic?: string;
   publishTopic?: string;
+  controlTopic?: string;
   dataKey: string;
   dataSubKey?: string;
   layout: {
@@ -47,6 +49,8 @@ export type WidgetResponse = {
   publish_topic: string;
   data_key: string;
   data_sub_key: string;
+  on_off_cmd: boolean;
+  widget_type: 'value-card' | 'switch';
   layout: {
     i: string;
     x: number;
@@ -54,6 +58,13 @@ export type WidgetResponse = {
     h: number;
     w: number;
   };
+};
+
+export type UpdateButtonPayload = {
+  topicForControl: string;
+  controlCmd: boolean;
+  dataKey: string;
+  widgetAssignId: string;
 };
 
 export type SaveDashboardPayload = {
@@ -81,6 +92,13 @@ const WidgetApiService = {
 
   saveDashboard: (payload: SaveDashboardPayload) =>
     apiCall<SaveDashboardPayload, unknown>('post', '/assignWidgets', payload),
+  // control widgets update api
+  updateButton: (payload: UpdateButtonPayload) =>
+    apiCall<UpdateButtonPayload, unknown>(
+      'post',
+      '/mqtt/button/publish',
+      payload
+    ),
 };
 
 export default WidgetApiService;

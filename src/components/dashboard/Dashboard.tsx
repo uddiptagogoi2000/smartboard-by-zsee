@@ -2,14 +2,18 @@ import { useState } from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
-import { LayoutItem, useDashboard, Widget } from '../context/DashboardRefactor';
+import {
+  useDashboard,
+  DashboardWidget,
+  LayoutItem,
+} from '../context/DashboardRefactor';
 import WidgetRenderer from '../widgets/WidgetRenderer';
-import { Card } from '@chakra-ui/react';
+import { Box, Card } from '@chakra-ui/react';
 
 type DashboardGridProps = {
   isEditing: boolean;
   layout: { i: string; x: number; y: number; w: number; h: number }[];
-  widgets: Record<string, Widget>;
+  widgets: Record<string, DashboardWidget>;
   onLayoutChange?: (
     newLayout: { i: string; x: number; y: number; w: number; h: number }[]
   ) => void;
@@ -26,7 +30,7 @@ const DashboardGrid = ({
   //   widgets,
   // });
 
-  const { dispatch } = useDashboard();
+  const { state, dispatch } = useDashboard();
   const [activeWidget, setActiveWidget] = useState<string | null>(null);
 
   const handleInteractionStart = (widgetId: string) => {
@@ -120,8 +124,22 @@ const DashboardGrid = ({
           bg={'gray.emphasized'}
           onMouseEnter={() => handleInteractionStart(item.i)} // Detect hover
           onMouseLeave={() => handleInteractionStop()} // Reset when mouse leaves
+          // cursor={'grab'}
         >
-          <Card.Body>
+          <Card.Body position={'relative'}>
+            {state.value === 'editing' && (
+              <Box
+                position={'absolute'}
+                top={0}
+                left={0}
+                width={'80%'}
+                height='80%'
+                // backgroundColor={'blackAlpha.200'}
+                zIndex={'overlay'}
+                cursor={'inherit'}
+                padding='inherit'
+              ></Box>
+            )}
             <WidgetRenderer widget={widgets[item.i]} />
           </Card.Body>
         </Card.Root>

@@ -1,12 +1,19 @@
 import {
+  Box,
   Flex,
+  Group,
   Heading,
   HStack,
   IconButton,
   Stack,
   Table,
 } from '@chakra-ui/react';
-import { RiAddLine, RiResetRightLine, RiSearchLine } from '@remixicon/react';
+import {
+  RiAddLine,
+  RiArrowGoBackLine,
+  RiResetRightLine,
+  RiSearchLine,
+} from '@remixicon/react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CommonDialog } from '../components/common/CommonDialog';
@@ -21,6 +28,7 @@ import { useGetAllDashboards } from '../hooks/dashboard/useDashboard';
 import PageLayout from '../layouts/PageLayout';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DashboardService } from '../services/dashboardService';
+import { Button } from '../components/ui/button';
 
 const DashboardListPage = () => {
   const [open, setOpen] = useState(false);
@@ -65,32 +73,44 @@ const DashboardListPage = () => {
         />
       </CommonDialog>
       <Stack
-        rounded={'sm'}
+        rounded={'lg'}
         height={'calc(0.95 * (100vh - 78px))'}
-        bg={'transparent'}
+        bg={'bg.panel'}
+        px={6}
       >
-        <Flex justifyContent={'space-between'} p={4} alignItems={'center'}>
+        <Flex justifyContent={'space-between'} py={8} alignItems={'center'}>
           <Heading>Dashboards</Heading>
           <HStack>
-            <IconButton
-              variant={'ghost'}
-              rounded={'full'}
+            <Button
+              variant={'solid'}
+              rounded={'sm'}
+              size={'sm'}
+              fontWeight={'bold'}
               onClick={() => handleOpenChange(true)}
             >
               <RiAddLine />
-            </IconButton>
-            <IconButton variant={'ghost'} rounded={'full'}>
+              Add dashboard
+            </Button>
+            {/* <IconButton variant={'ghost'} rounded={'full'}>
               <RiResetRightLine />
             </IconButton>
             <IconButton variant={'ghost'} rounded={'full'}>
               <RiSearchLine />
-            </IconButton>
+            </IconButton> */}
           </HStack>
         </Flex>
         <Table.ScrollArea height={'full'}>
-          <Table.Root size='lg' stickyHeader interactive striped>
+          <Table.Root
+            size='lg'
+            stickyHeader
+            interactive
+            // striped
+            colorPalette={'transparent'}
+            variant={'line'}
+            rounded={'md'}
+          >
             <Table.Header>
-              <Table.Row bg='bg.muted'>
+              <Table.Row bg={'blackAlpha.300'} fontSize={'sm'}>
                 <Table.ColumnHeader>Id</Table.ColumnHeader>
                 <Table.ColumnHeader>Title</Table.ColumnHeader>
                 <Table.ColumnHeader>Created By</Table.ColumnHeader>
@@ -100,6 +120,7 @@ const DashboardListPage = () => {
             <Table.Body>
               {data?.data.map((item) => (
                 <Table.Row
+                  bg='transparent'
                   key={item._id}
                   onClick={() =>
                     navigate(
@@ -121,13 +142,14 @@ const DashboardListPage = () => {
           pageSize={5}
           page={1}
           py={2}
-          ml={'auto'}
+          mx={'auto'}
+          variant='solid'
         >
-          <HStack wrap='wrap'>
+          <Group attached>
             <PaginationPrevTrigger />
             <PaginationItems />
             <PaginationNextTrigger />
-          </HStack>
+          </Group>
         </PaginationRoot>
       </Stack>
     </PageLayout>

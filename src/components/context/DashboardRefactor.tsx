@@ -6,13 +6,14 @@ type DashboardAction =
   | {
       type: 'ADD_WIDGET';
       payload: Pick<
-        Widget,
+        DashboardWidget,
         'dataKey' | 'dataSubKey' | 'label' | 'type' | 'typeId'
-      >;
+      > &
+        Partial<Pick<DashboardWidget, 'controlTopic'>>;
     }
   | {
       type: 'UPDATE_WIDGET';
-      payload: { id: string } & Partial<Omit<Widget, 'id'>>;
+      payload: { id: string } & Partial<Omit<DashboardWidget, 'id'>>;
     }
   | {
       type: 'DELETE_WIDGET';
@@ -20,7 +21,7 @@ type DashboardAction =
     }
   | {
       type: 'SET_WIDGETS';
-      payload: Widget[];
+      payload: DashboardWidget[];
     }
   | {
       type: 'UPDATE_LAYOUT';
@@ -37,7 +38,7 @@ type DashboardAction =
       payload: DashboardState;
     };
 
-type WidgetLayout = {
+export type LayoutItem = {
   i: string;
   x: number;
   y: number;
@@ -48,54 +49,74 @@ type WidgetLayout = {
   isResizable?: boolean;
 };
 
-export type LayoutItem = WidgetLayout;
+export type WidgetDesign = {};
 
-export type BaseWidget = {
+export type WidgetBase = {
   id: string;
   type: string;
   typeId: string;
   label: string;
   dataKey: string;
   dataSubKey?: string;
-  layout: WidgetLayout;
+  layout: LayoutItem;
+  controlTopic?: string;
 };
 
-interface ValueCardWidget extends BaseWidget {
+export type SwitchWidgetDesignConfig = {
+  title?: string;
+  isTitleHidden?: boolean;
+  color?: string;
+  showOnOffLabel?: boolean;
+  onLabelText?: string;
+  offLabelText?: string;
+  labelPosition?: 'right' | 'left';
+};
+
+export interface ValueCardWidgetData extends WidgetBase {
   type: 'value-card';
   data?: string | number;
 }
 
-export type Widget = ValueCardWidget;
+export interface SwitchWidgetData extends WidgetBase {
+  type: 'switch';
+  data?: boolean;
+  design?: SwitchWidgetDesignConfig;
+}
 
-type DashboardState = 'readonly' | 'editing' | 'fetching' | 'persisting';
+export type DashboardWidget = ValueCardWidgetData | SwitchWidgetData;
+
+type DashboardState = 'readonly' | 'editing';
 
 type Dashboard = {
   value: DashboardState;
   context: {
     id: string;
-    widgets: Widget[];
+    widgets: DashboardWidget[];
     newWidgets: Set<string>;
     updatedWidgets: Set<string>;
     deletedWidgets: Set<string>;
   };
 };
 
+// const switchWidget1: Widget = {
+//   id: '1',
+//   type: 'switch',
+//   typeId: 'value-card-1',
+//   label: 'Value Card',
+//   dataKey: 'temperature',
+//   dataSubKey: 'current',
+//   layout: { i: '1', x: 0, y: 0, w: 2, h: 2 },
+//   data: 0,
+// };
+
 // flux/ state-machine
 export function dashboardReducer(
   state: Dashboard,
   action: DashboardAction
 ): Dashboard {
-  // console.log({
-  //   state,
-  //   action,
-  // });
-
   switch (state.value) {
     case 'readonly': {
-      if (
-        action.type === 'TOGGLE_STATE' &&
-        (action.payload === 'editing' || action.payload === 'fetching')
-      ) {
+      if (action.type === 'TOGGLE_STATE' && action.payload === 'editing') {
         return {
           ...state,
           value: action.payload,
@@ -115,7 +136,7 @@ export function dashboardReducer(
       return state;
     }
     case 'editing': {
-      if (action.type === 'TOGGLE_STATE' && action.payload !== 'fetching') {
+      if (action.type === 'TOGGLE_STATE') {
         return {
           ...state,
           value: action.payload,
@@ -136,11 +157,23 @@ export function dashboardReducer(
             ? maxYWidget.layout.y + maxYWidget.layout.h
             : 0;
 
-        const newWidget: Widget = {
+        let newWidget: DashboardWidget = {
           ...action.payload,
           id,
           layout: { i: id, x: 0, y: yPos, w: 2, h: 3 },
         };
+
+        if (action.payload.type === 'switch') {
+          newWidget = {
+            ...action.payload,
+            id,
+            layout: { i: id, x: 0, y: yPos, w: 2, h: 3 },
+            controlTopic: action.payload.controlTopic,
+            design: {
+              title: action.payload.label,
+            },
+          };
+        }
 
         return {
           ...state,
@@ -165,42 +198,10 @@ export function dashboardReducer(
             updatedWidgets,
             widgets: state.context.widgets.map((widget) =>
               widget.id === action.payload.id
-                ? { ...widget, ...action.payload }
+                ? { ...widget, ...action.payload, type: widget.type }
                 : widget
             ),
           },
-        };
-      }
-
-      return state;
-    }
-    case 'fetching': {
-      if (action.type === 'SET_WIDGETS') {
-        return {
-          ...state,
-          value: 'readonly',
-          context: {
-            ...state.context,
-            widgets: action.payload,
-          },
-        };
-      }
-
-      if (action.type === 'TOGGLE_STATE' && action.payload === 'readonly') {
-        return {
-          ...state,
-          value: action.payload,
-        };
-      }
-      return state;
-    }
-    case 'persisting': {
-      // if success, change state to view
-      // if error, change state to edit
-      if (action.type === 'TOGGLE_STATE') {
-        return {
-          ...state,
-          value: action.payload,
         };
       }
 
@@ -215,6 +216,7 @@ export function dashboardReducer(
 type DashboardContextType = {
   state: Dashboard;
   dispatch: React.Dispatch<DashboardAction>;
+  dashboardDataLoading: boolean;
 };
 
 const DashboardContext = createContext<DashboardContextType | undefined>(
@@ -237,27 +239,14 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   const {
     data,
     isFetched,
-    isSuccess,
-    isPending,
-    isLoading,
     isFetching,
+    isLoading,
     isFetchedAfterMount,
     refetch,
   } = useGetWidgetsByDashboardId(state.value === 'editing', dashboardId);
 
-  console.log({
-    state,
-    isFetched,
-    isSuccess,
-    isPending,
-    isLoading,
-    isFetching,
-    isFetchedAfterMount,
-  });
-
   useEffect(() => {
     if (data && isFetched && isFetchedAfterMount && !isFetching) {
-      console.log('setting widgets');
       dispatch({
         type: 'SET_WIDGETS',
         payload:
@@ -265,33 +254,16 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             id: widget._id,
             typeId: widget.widget_infoId,
             label: widget.widget_label,
-            type: 'value-card',
+            type: widget.widget_type,
             dataKey: widget.data_key,
             layout: { ...widget.layout, i: widget._id },
             dataSubKey: widget.data_sub_key,
+            controlTopic: widget.control_topic,
+            data: widget.on_off_cmd,
           })) ?? [],
       });
     }
   }, [data, isFetched, isFetchedAfterMount, isFetching]);
-
-  useEffect(() => {
-    // console.log('isFetching', isFetching);
-    // if (isFetching) {
-    //   dispatch({
-    //     type: 'TOGGLE_STATE',
-    //     payload: 'fetching',
-    //   });
-    // }
-  }, [isFetching]);
-
-  // useEffect(() => {
-  //   if (isFetched || isFetchedAfterMount) {
-  //     dispatch({
-  //       type: 'TOGGLE_STATE',
-  //       payload: 'readonly',
-  //     });
-  //   }
-  // }, [isFetched, isFetchedAfterMount]);
 
   useEffect(() => {
     if (state.value === 'readonly') {
@@ -300,7 +272,9 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
   }, [state.value]);
 
   return (
-    <DashboardContext.Provider value={{ state, dispatch }}>
+    <DashboardContext.Provider
+      value={{ state, dispatch, dashboardDataLoading: isLoading || isFetching }}
+    >
       {children}
     </DashboardContext.Provider>
   );

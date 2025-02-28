@@ -21,6 +21,8 @@ type Topic = {
   topicForControl: string;
 };
 
+type ControlTopic = Pick<Topic, 'deviceId' | 'topicForControl'>;
+
 type CreateTopicPayload = {
   deviceId: string;
   topicForControl: string;
@@ -45,6 +47,8 @@ export const DashboardService = {
 
   getDevicesByUser: () => apiCall<null, Device[]>('get', '/devicesByUser'),
   getTopicList: () => apiCall<null, Topic[]>('get', '/topicsByUser'),
+  getControlTopicsByUser: (deviceId: string) =>
+    apiCall<null, ControlTopic[]>('get', `/controlTopics?deviceId=${deviceId}`),
   createTopic: (payload: CreateTopicPayload) =>
     apiCall<CreateTopicPayload, unknown>('post', '/topics', payload),
 };

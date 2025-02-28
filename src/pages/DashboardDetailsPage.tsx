@@ -18,7 +18,10 @@ import {
 } from '@remixicon/react';
 import { useState } from 'react';
 import { CommonDialog } from '../components/common/CommonDialog';
-import { useDashboard, Widget } from '../components/context/DashboardRefactor';
+import {
+  useDashboard,
+  DashboardWidget,
+} from '../components/context/DashboardRefactor';
 import { WebSocketProvider } from '../components/context/WebSocketProvider';
 import WidgetCard from '../components/dashboard/WidgetCard';
 import { Button } from '../components/ui/button';
@@ -27,30 +30,31 @@ import PageLayout from '../layouts/PageLayout';
 import DashboardGrid from '../components/dashboard/Dashboard';
 import AddWidgetForm from '../components/dashboard/AddWidgetForm';
 import { useParams, useSearchParams } from 'react-router-dom';
+import AddControlWidgetForm from '../components/dashboard/AddControlWidgetForm';
 
 const DashboardDetailsPage = () => {
   const [widgetTypeId, setWidgetTypeId] = useState<null | string>(null);
   const [isViewingWidgetTypes, setIsViewingWidgetTypes] = useState(false);
   const { data, isLoading } = useGetWidgets(isViewingWidgetTypes);
-  const { state, dispatch } = useDashboard();
+  const { state, dispatch, dashboardDataLoading } = useDashboard();
   const { id } = useParams();
   const saveDashboardMutation = useSaveDashboard(id ?? '');
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const deviceId = searchParams.get('deviceId') ?? '';
-  console.log({ deviceId });
 
   const widgetType = data?.data.find((wt) => wt._id === widgetTypeId);
   const isEditing = !!widgetTypeId;
 
   function handleOpenWidget(id: string) {
     setWidgetTypeId(id);
-    // setIsAddingWidget(false);
   }
 
   function handleOpenChange(open: boolean) {
     if (!open) setWidgetTypeId(null);
   }
+
+  console.log('state', state);
 
   return (
     <WebSocketProvider deviceId={deviceId}>
@@ -59,27 +63,62 @@ const DashboardDetailsPage = () => {
         open={isEditing}
         onOpenChange={handleOpenChange}
       >
-        <AddWidgetForm
-          onOpenChange={handleOpenChange}
-          onAdd={(
-            widgetInfo: Pick<Widget, 'dataKey' | 'dataSubKey' | 'label'>
-          ) => {
-            dispatch({
-              type: 'ADD_WIDGET',
-              payload: {
-                dataKey: widgetInfo.dataKey,
-                dataSubKey: widgetInfo.dataSubKey,
-                label: widgetInfo.label,
-                type: 'value-card',
-                typeId: widgetTypeId!,
-              },
-            });
-            handleOpenChange(false);
-            setIsViewingWidgetTypes(false);
-          }}
-        />
+        {widgetType?.widget_type === 'switch' ? (
+          <AddControlWidgetForm
+            onOpenChange={handleOpenChange}
+            onAdd={(
+              widgetInfo: Pick<
+                DashboardWidget,
+                'dataKey' | 'label' | 'controlTopic'
+              >
+            ) => {
+              console.log('onadd control topic', widgetInfo);
+
+              dispatch({
+                type: 'ADD_WIDGET',
+                payload: {
+                  dataKey: widgetInfo.dataKey,
+                  label: widgetInfo.label,
+                  type: widgetType?.widget_type as any,
+                  typeId: widgetTypeId!,
+                  controlTopic: widgetInfo.controlTopic,
+                },
+              });
+              handleOpenChange(false);
+              setIsViewingWidgetTypes(false);
+            }}
+            deviceId={deviceId}
+          />
+        ) : (
+          <AddWidgetForm
+            onOpenChange={handleOpenChange}
+            onAdd={(
+              widgetInfo: Pick<
+                DashboardWidget,
+                'dataKey' | 'dataSubKey' | 'label'
+              >
+            ) => {
+              dispatch({
+                type: 'ADD_WIDGET',
+                payload: {
+                  dataKey: widgetInfo.dataKey,
+                  dataSubKey: widgetInfo.dataSubKey,
+                  label: widgetInfo.label,
+                  type: widgetType?.widget_type as any,
+                  typeId: widgetTypeId!,
+                },
+              });
+              handleOpenChange(false);
+              setIsViewingWidgetTypes(false);
+            }}
+          />
+        )}
       </CommonDialog>
-      <PageLayout isLoading={isLoading} fixedHeight fullWidth>
+      <PageLayout
+        isLoading={isLoading || dashboardDataLoading}
+        fixedHeight
+        fullWidth
+      >
         <Box
           bgColor={'Background'}
           width={{
@@ -139,6 +178,9 @@ const DashboardDetailsPage = () => {
               base: '2',
               lg: '0',
             }}
+            position='sticky'
+            top={0}
+            zIndex={'sticky'}
           >
             <GridItem>{name}</GridItem>
             <GridItem>
@@ -208,6 +250,8 @@ const DashboardDetailsPage = () => {
                             widgetInfoId: widget.typeId,
                             widgetLabel: widget.label,
                             layout: widget.layout,
+                            controlTopic: widget.controlTopic,
+                            // widgetType: widget.type,
                           })),
                           updated_widgets: updatedWidgetsArray.map(
                             (widget) => ({
@@ -217,6 +261,8 @@ const DashboardDetailsPage = () => {
                               widgetInfoId: widget.typeId,
                               widgetLabel: widget.label,
                               layout: widget.layout,
+                              controlTopic: widget.controlTopic,
+                              // widgetType: widget.type,
                             })
                           ),
                         });
@@ -257,7 +303,7 @@ const DashboardDetailsPage = () => {
               acc[widget.id] = widget;
               return acc;
             },
-            {} as Record<string, Widget>
+            {} as Record<string, DashboardWidget>
           )}
           onLayoutChange={(layout) => console.log(layout)}
         />
