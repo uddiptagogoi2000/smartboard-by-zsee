@@ -83,6 +83,7 @@ export const useSaveDashboard = (dashboardId: string) => {
       queryClient.invalidateQueries({ queryKey: ['widgets', dashboardId] });
 
       dispatch({ type: 'TOGGLE_STATE', payload: 'readonly' });
+      dispatch({ type: 'RESET_DASHBOARD' });
     },
     onError: (error) => {
       console.error('Failed to save dashboard', error);

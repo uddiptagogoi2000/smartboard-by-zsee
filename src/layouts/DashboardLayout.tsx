@@ -59,7 +59,7 @@ const DashboardLayout = (): JSX.Element => {
             transition='margin-left 0.3s ease' // Smooth transition for the push effect
             // px={isSidebarVisible ? 8 : 4}
             overflow={'hidden'}
-            height={'inherit'}
+            height={'100%'}
           >
             <Button
               onClick={handleShowSidebar}

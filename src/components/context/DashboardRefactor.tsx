@@ -4,6 +4,9 @@ import { useGetWidgetsByDashboardId } from '../../hooks/widgets/useWidgets';
 
 type DashboardAction =
   | {
+      type: 'RESET_DASHBOARD';
+    }
+  | {
       type: 'ADD_WIDGET';
       payload: Pick<
         DashboardWidget,
@@ -98,22 +101,25 @@ type Dashboard = {
   };
 };
 
-// const switchWidget1: Widget = {
-//   id: '1',
-//   type: 'switch',
-//   typeId: 'value-card-1',
-//   label: 'Value Card',
-//   dataKey: 'temperature',
-//   dataSubKey: 'current',
-//   layout: { i: '1', x: 0, y: 0, w: 2, h: 2 },
-//   data: 0,
-// };
-
-// flux/ state-machine
+// state-machine
 export function dashboardReducer(
   state: Dashboard,
   action: DashboardAction
 ): Dashboard {
+  // Global events first
+  if (action.type === 'RESET_DASHBOARD') {
+    return {
+      ...state,
+      context: {
+        ...state.context,
+        newWidgets: new Set(),
+        updatedWidgets: new Set(),
+        deletedWidgets: new Set(),
+      },
+    };
+  }
+
+  // State dependent events
   switch (state.value) {
     case 'readonly': {
       if (action.type === 'TOGGLE_STATE' && action.payload === 'editing') {
@@ -164,6 +170,8 @@ export function dashboardReducer(
         };
 
         if (action.payload.type === 'switch') {
+          console.log('action controlTopic', action.payload.controlTopic);
+
           newWidget = {
             ...action.payload,
             id,
@@ -173,6 +181,8 @@ export function dashboardReducer(
               title: action.payload.label,
             },
           };
+
+          console.log('new widget', newWidget);
         }
 
         return {
@@ -198,9 +208,31 @@ export function dashboardReducer(
             updatedWidgets,
             widgets: state.context.widgets.map((widget) =>
               widget.id === action.payload.id
-                ? { ...widget, ...action.payload, type: widget.type }
+                ? ({
+                    ...widget,
+                    ...action.payload,
+                    type: widget.type,
+                  } as DashboardWidget)
                 : widget
             ),
+          },
+        };
+      }
+
+      if (action.type === 'DELETE_WIDGET') {
+        let id = action.payload;
+
+        if (!state.context.newWidgets.has(id)) {
+          state.context.deletedWidgets.add(id);
+        }
+        state.context.newWidgets.delete(id);
+        state.context.updatedWidgets.delete(id);
+
+        return {
+          ...state,
+          context: {
+            ...state.context,
+            widgets: state.context.widgets.filter((widget) => widget.id !== id),
           },
         };
       }
@@ -250,7 +282,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
       dispatch({
         type: 'SET_WIDGETS',
         payload:
-          data?.data.map((widget) => ({
+          (data?.data.map((widget) => ({
             id: widget._id,
             typeId: widget.widget_infoId,
             label: widget.widget_label,
@@ -260,7 +292,7 @@ const DashboardProvider = ({ children }: { children: React.ReactNode }) => {
             dataSubKey: widget.data_sub_key,
             controlTopic: widget.control_topic,
             data: widget.on_off_cmd,
-          })) ?? [],
+          })) as DashboardWidget[]) ?? [],
       });
     }
   }, [data, isFetched, isFetchedAfterMount, isFetching]);

@@ -23,7 +23,7 @@ export type ValidateWidgetSubkeyPayload = {
   widgetLabel: string;
 };
 
-type WidgetPayload = {
+export type WidgetPayload = {
   widgetAssignId: string;
   widgetType: string;
   widgetInfoId: string;
@@ -50,6 +50,7 @@ export type WidgetResponse = {
   data_key: string;
   data_sub_key: string;
   on_off_cmd: boolean;
+  control_topic: string;
   widget_type: 'value-card' | 'switch';
   layout: {
     i: string;
@@ -71,6 +72,7 @@ export type SaveDashboardPayload = {
   dashboardId: string;
   updated_widgets: WidgetPayload[];
   new_widgets: Omit<WidgetPayload, 'widgetAssignId'>[];
+  deleted_widgets: string[];
 };
 
 const WidgetApiService = {
@@ -90,8 +92,14 @@ const WidgetApiService = {
       payload
     ),
 
-  saveDashboard: (payload: SaveDashboardPayload) =>
-    apiCall<SaveDashboardPayload, unknown>('post', '/assignWidgets', payload),
+  saveDashboard: (payload: SaveDashboardPayload) => {
+    console.log('payloadfdfdfdfdfd', payload);
+    return apiCall<SaveDashboardPayload, unknown>(
+      'post',
+      '/assignWidgets',
+      payload
+    );
+  },
   // control widgets update api
   updateButton: (payload: UpdateButtonPayload) =>
     apiCall<UpdateButtonPayload, unknown>(

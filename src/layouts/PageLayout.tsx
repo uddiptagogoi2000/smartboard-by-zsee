@@ -19,6 +19,7 @@ const PageLayout = ({
       overflowX={fixedHeight ? 'hidden' : 'auto'}
       position={'relative'}
       height={fixedHeight ? '100%' : 'auto'}
+      // minHeight={'100%'}
     >
       <ProgressRoot
         value={null}

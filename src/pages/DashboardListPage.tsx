@@ -1,23 +1,11 @@
-import {
-  Box,
-  Flex,
-  Group,
-  Heading,
-  HStack,
-  IconButton,
-  Stack,
-  Table,
-} from '@chakra-ui/react';
-import {
-  RiAddLine,
-  RiArrowGoBackLine,
-  RiResetRightLine,
-  RiSearchLine,
-} from '@remixicon/react';
+import { Flex, Group, Heading, HStack, Stack, Table } from '@chakra-ui/react';
+import { RiAddLine } from '@remixicon/react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CommonDialog } from '../components/common/CommonDialog';
 import CreateDashboardForm from '../components/dashboard/CreateDashboardForm';
+import { Button } from '../components/ui/button';
 import {
   PaginationItems,
   PaginationNextTrigger,
@@ -26,9 +14,7 @@ import {
 } from '../components/ui/pagination';
 import { useGetAllDashboards } from '../hooks/dashboard/useDashboard';
 import PageLayout from '../layouts/PageLayout';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { DashboardService } from '../services/dashboardService';
-import { Button } from '../components/ui/button';
 
 const DashboardListPage = () => {
   const [open, setOpen] = useState(false);

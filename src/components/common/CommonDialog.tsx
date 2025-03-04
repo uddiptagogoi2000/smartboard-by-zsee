@@ -8,6 +8,7 @@ import {
   DialogRoot,
   DialogTitle,
 } from '../../components/ui/dialog';
+import { DialogRootProps } from '@chakra-ui/react';
 
 export type CommonDialogProps = {
   title: string;
@@ -22,7 +23,9 @@ export const CommonDialog = ({
   open,
   onOpenChange,
   ...props
-}: PropsWithChildren<CommonDialogProps>) => {
+}: PropsWithChildren<
+  CommonDialogProps & Omit<DialogRootProps, 'onOpenChange'>
+>) => {
   const [body, footer] = Children.toArray(children);
 
   return (

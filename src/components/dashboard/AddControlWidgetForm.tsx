@@ -7,7 +7,7 @@ import { addControlWidgetSchema } from '../../schemas';
 import { Button } from '../ui/button';
 import { Field } from '../ui/field';
 import { useEffect, useMemo, useRef } from 'react';
-import { Widget } from '../context/DashboardRefactor';
+import { DashboardWidget } from '../context/DashboardRefactor';
 import {
   SelectContent,
   SelectItem,
@@ -26,7 +26,7 @@ type FormDialogProps = {
 
 type AddWidgetFormProps = FormDialogProps & {
   onAdd: (
-    widgetInfo: Pick<Widget, 'dataKey' | 'controlTopic' | 'label'>
+    widgetInfo: Pick<DashboardWidget, 'dataKey' | 'controlTopic' | 'label'>
   ) => void;
   deviceId: string;
 };

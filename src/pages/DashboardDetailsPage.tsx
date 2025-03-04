@@ -31,6 +31,7 @@ import DashboardGrid from '../components/dashboard/Dashboard';
 import AddWidgetForm from '../components/dashboard/AddWidgetForm';
 import { useParams, useSearchParams } from 'react-router-dom';
 import AddControlWidgetForm from '../components/dashboard/AddControlWidgetForm';
+import { WidgetPayload } from '../services/widgetService';
 
 const DashboardDetailsPage = () => {
   const [widgetTypeId, setWidgetTypeId] = useState<null | string>(null);
@@ -121,6 +122,7 @@ const DashboardDetailsPage = () => {
       >
         <Box
           bgColor={'Background'}
+          height={'100%'}
           width={{
             base: '100%',
             lg: '70%',
@@ -233,9 +235,15 @@ const DashboardDetailsPage = () => {
                         bg: 'none',
                       }}
                       onClick={() => {
+                        // console.log('state', state);
+
                         const newWidgetsArray = state.context.widgets.filter(
                           (widget) => state.context.newWidgets.has(widget.id)
                         );
+
+                        console.log('heredfd');
+
+                        console.log('new Widgets array', newWidgetsArray);
 
                         const updatedWidgetsArray =
                           state.context.widgets.filter((widget) =>
@@ -251,8 +259,7 @@ const DashboardDetailsPage = () => {
                             widgetLabel: widget.label,
                             layout: widget.layout,
                             controlTopic: widget.controlTopic,
-                            // widgetType: widget.type,
-                          })),
+                          })) as Omit<WidgetPayload, 'widgetAssignId'>[],
                           updated_widgets: updatedWidgetsArray.map(
                             (widget) => ({
                               dataKey: widget.dataKey,
@@ -262,8 +269,10 @@ const DashboardDetailsPage = () => {
                               widgetLabel: widget.label,
                               layout: widget.layout,
                               controlTopic: widget.controlTopic,
-                              // widgetType: widget.type,
                             })
+                          ) as WidgetPayload[],
+                          deleted_widgets: Array.from(
+                            state.context.deletedWidgets
                           ),
                         });
                       }}
